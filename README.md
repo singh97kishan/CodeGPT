@@ -9,6 +9,7 @@ Code GPT is a cutting-edge Generative AI tool that turns user prompts into funct
 
 
 ### 🌟 Unique Selling Point (USP)
+
 Unlike other code generators, Code GPT lets you generate and run Python code directly in the UI—no need for external tools or manual copying.
 
 

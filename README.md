@@ -32,3 +32,61 @@ Unlike other code generators, Code GPT lets you generate and run Python code dir
 ### 🤖 How It Works
 
 Code GPT extracts Python functions from generated scripts, accepts user inputs, and runs them safely using Python's subprocess module—all within the Streamlit UI, providing instant feedback.
+
+### 💻 How to Run Locally
+
+#### Prerequisites
+Make sure you have the following installed:
+- **Python 3.8+**
+- **pip** (Python package installer)
+- **Git** (to clone the repository)
+
+### Steps to Pull and Run Code GPT
+Follow these steps to clone the repository and run the app locally:
+
+1. **Clone the repository**:
+   Open your terminal or command prompt and run the following command to clone the repository to your local machine:
+   
+   ```bash
+   git clone https://github.com/singh97kishan/CodeGPT.git
+
+2. **Navigate to the project directory**
+    Change into the project folder using:
+    ```bash
+    cd repository-name
+
+3. **Create Virtual Env**:
+    Create a virtual environment (optional but recommended): Set up a virtual environment to avoid conflicts with other Python packages. You can create one using:
+    ```bash
+    conda create -p venv -y
+
+4. **Activate venv and install dependencies**:
+    ```bash
+    activate venv/
+    pip install -r requirements.txt
+
+5. **Run the Streamlit app**:
+    ```bash
+    streamlit run app.py
+
+6. **Open the app in your browser:**
+    After running the above command, Streamlit will provide you with a local URL (usually http://localhost:8501). Open it in your browser to start using Code GPT.
+
+### 🛠️ How to Contribute
+Contributions are welcome! If you'd like to help improve Code GPT, follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature:
+    ```bash
+    git checkout -b feature-name
+
+3. Make your changes.
+4. Commit and push your changes:
+    ```bash
+    git add .
+    git commit -m "Added new feature"
+    git push origin feature-name
+5. Open a Pull Request on the original repository.
+
+### 📝 License
+This project is licensed under the MIT License.

@@ -17,7 +17,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 
 load_dotenv()
 
-st.logo("logo.png", icon_image="logo.png")
+st.logo("imgs\logo.png", icon_image="imgs\logo.png")
 st.set_page_config(page_title="Code GPT", page_icon="🦜", layout='wide')
 
 

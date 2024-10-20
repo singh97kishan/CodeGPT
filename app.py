@@ -49,9 +49,8 @@ def get_groq_key():
     model_name= st.selectbox('Model', ['Mixtral-8x7b-32768', 'llama3-8b-8192', 'gemma2-9b-it'])
     if st.button("Submit"):
         st.session_state.model_config = {"model_name": model_name, "groq_api_key": groq_api_key}
-        st.rerun()
-    if "store" not in st.session_state:
         st.session_state.store = {}
+        st.rerun()
 
 if 'groq_api_key' not in st.session_state.model_config:
     get_groq_key()

@@ -1,7 +1,8 @@
 ### 🚀 **Code GPT**: Generative AI Python Code Generator
 
 A powerful AI-based solution that generates Python code based on user input prompts and allows you to execute it right in the UI.
-![alt text](imgs\image.jpg)
+
+![alt text](imgs/image.jpg)
 
 ### 🚀 Overview
 Code GPT is a cutting-edge Generative AI tool that turns user prompts into functional Python programs instantly. What sets it apart? You can run the generated code right inside the app! Built on Langchain for smart prompt understanding, Mixtral from Groq for efficient AI computation, and powered by Python, this tool offers a smooth, all-in-one coding experience.

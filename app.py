@@ -17,34 +17,54 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 
 load_dotenv()
 
-################# Streamlit Implementation #################
+st.logo("logo.png", icon_image="logo.png")
+st.set_page_config(page_title="Code GPT", page_icon="🦜", layout='wide')
 
-st.set_page_config(page_title="Code GPT", page_icon="🦜")
-st.title("Code GPT")
 
-st.sidebar.title("Model Settings")
-radio_options = ['Self Groq API Key', 'Default Groq API Key']
-selected_radio_option = st.sidebar.radio(options=radio_options, label="Groq API Key")
-if selected_radio_option == 'Self Groq API Key':
-    groq_api_key = st.sidebar.text_input("Groq API Key", type="password")
-else:
-    groq_api_key = os.getenv("GROQ_API_KEY")
+hide_footer = """ <style> #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}</style> """
+st.markdown(hide_footer, unsafe_allow_html=True)
+def load_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-if not groq_api_key:
-    st.info("Enter Groq API Key to proceed")
-else:
-    llm = ChatGroq(model_name="Mixtral-8x7b-32768", groq_api_key=groq_api_key)
+# Load the CSS file
+load_css("style.css")
 
-    session_id = random_session_id(5)
-    config = {"configurable": {"session_id": f"{session_id}"}}
+st.markdown("""
+    <div class="header">
+        Code GPT
+    </div>
+""", unsafe_allow_html=True)
 
+if "model_config" not in st.session_state:
+    st.session_state.model_config = {}
+
+@st.dialog("Groq Configurations")
+def get_groq_key():
+    on = st.toggle("Default Key")
+    if on:
+        groq_api_key= os.getenv('GROQ_API_KEY')
+    else:
+        groq_api_key= st.text_input('Groq API Key')
+    model_name= st.selectbox('Model', ['Mixtral-8x7b-32768', 'llama3-8b-8192', 'gemma2-9b-it'])
+    if st.button("Submit"):
+        st.session_state.model_config = {"model_name": model_name, "groq_api_key": groq_api_key}
+        st.rerun()
     if "store" not in st.session_state:
         st.session_state.store = {}
 
-    if "messages" not in st.session_state:
-        st.session_state.messages = [
-            {"role": "assistant", "content": "Hi, I'm here to help you code 🚀"}
-        ]
+if 'groq_api_key' not in st.session_state.model_config:
+    get_groq_key()
+    st.info("Enter Groq API Key to proceed")
+    if st.button('Groq Config'):
+        get_groq_key()
+else:
+    model_name= st.session_state.model_config['model_name']
+    groq_api_key= st.session_state.model_config['groq_api_key']
+    llm = ChatGroq(model_name=model_name, groq_api_key=groq_api_key)
+
+    session_id = random_session_id(5)
+    config = {"configurable": {"session_id": f"{session_id}"}}
 
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -56,80 +76,51 @@ else:
     chain = prompt | llm
     with_message_history = RunnableWithMessageHistory(chain, get_session_history)
 
-    for msg in st.session_state.messages:
-        if msg['role'] == "assistant":
-            if msg['content'] == "Hi, I'm here to help you code 🚀":
-                st.chat_message(msg['role']).write(msg['content'])
-            else:
-                st.chat_message(msg['role']).code(msg['content'])
-                with st.expander("Execute function"):
-                    st.code(msg['expander_content'])
-        else:
-            st.chat_message(msg['role']).write(msg['content'])
-
-    if user_input := st.chat_input(placeholder='Start asking your codes here..'):
-        st.session_state.messages.append({'role': 'user', 'content': user_input})
-        st.chat_message('user').write(user_input)
-
-    if st.session_state.messages[-1]['role']!='assistant':
-        with st.chat_message('assistant'):
-            with st.spinner('Generating response..'):
-                response = get_llm_response(user_input, with_message_history, config)
+    user_query= st.text_area("Start asking your codes here..")
+    if st.button("Submit query"):
+        try:
+            with st.spinner("Generating code..."):
+                response = get_llm_response(user_query, with_message_history, config)
                 code = clean_generated_code(response)
-                st.code(code)
+            st.session_state.code= code
+        except Exception as e:
+            st.error(e)
 
-                extracted_function = extract_function(code)
-                function_name = extract_function_name(code)
+    if 'code' in st.session_state:
+        st.subheader("Generated Code:")
+        st.code(st.session_state.code, language='python')
+        extracted_function = extract_function(st.session_state.code)
+        function_name = extract_function_name(st.session_state.code)
+        input_vars_dict = retrieve_input_vars_and_type(st.session_state.code)
 
-                st.session_state.code = code
-                st.session_state.extracted_function = extracted_function
-                st.session_state.function_name = function_name
+        st.session_state.function= extracted_function
+        st.session_state.function_name= function_name
+        st.session_state.func_input_vars = input_vars_dict
 
-                input_vars_dict = retrieve_input_vars_and_type(code)
+        st.code(run_code(st.session_state.code)[1])
+        user_input = st.text_input("Enter input vars separated by space")
 
-                expander = st.expander("Execute function")
-                expander.code(f'Output of the code: {run_code(code)[1]}')
-
-                #st.session_state.expander= expander
-                user_input = expander.text_input("Enter input vars separated by space")
-                #if user_input:
-                user_input = user_input.strip()
-                input_dtypes = list(input_vars_dict.values())
-                try:
-                    final_user_input = parse_user_input(user_input, input_dtypes)
-                except Exception as e:
-                    st.error(f"Error parsing inputs: {str(e)}")
-                    final_user_input = None
-
-                local_vars = {}
-                exec(function_name)
-                try:
-                    expander_response = call_function_by_name(function_name, *user_input)
-                    st.code(expander_response)
-                    st.session_state.output = expander_response
-                except Exception as e:
-                    st.session_state.output = str(e)
-
-        st.session_state.messages.append({'role': 'assistant', 'content': code, 'expander_content':st.session_state.output})
-
-    # # This ensures that the messages persist and append correctly
-    # st.session_state.messages = st.session_state.messages
-
-    #python program to find the square of a number
-
-
-    # Display the output if it exists
-    # if "extracted_function" in st.session_state:
-    #     st.code(st.session_state.extracted_function)
-
-    #     with st.expander("Run Your Function"):
-    #         custom_input = st.number_input("Custom values", value=0)
-
-    #         # Prepare to execute the function stored in session_state
-    #         local_vars = {}
-    #         exec(st.session_state.extracted_function, {}, local_vars)
-    #         user_response = local_vars[st.session_state.function_name](custom_input)
-    #         st.code(user_response)
-
+        if st.button('Run Function'):
+            user_input = user_input.strip()
+            input_dtypes = list(input_vars_dict.values())
+            try:
+                final_user_input = parse_user_input(user_input, input_dtypes)
+            except Exception as e:
+                st.error(f"Error parsing inputs: {str(e)}")
+                final_user_input = None
             
-    st.sidebar.button('Clear Chat History', on_click=reset_chat(session_id))
+            # Execute the function definition in the global context
+            exec(st.session_state.function, globals())
+            
+            try:
+                # Retrieve and call the function directly from globals
+                function_to_call = globals().get(st.session_state.function_name)
+                if function_to_call is None:
+                    raise NameError(f"Function '{st.session_state.function_name}' is not defined.")
+                
+                final_response = function_to_call(*final_user_input)
+                st.code(final_response)
+            except NameError as e:
+                st.error(f"Error: {str(e)}")
+            except Exception as e:
+                st.error(f"Error during function execution: {str(e)}")

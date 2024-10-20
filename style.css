@@ -1,0 +1,118 @@
+/* Hide the Streamlit watermark */
+.stApp .css-1vbd788.egzxvld1 {
+    display: none;
+}
+
+/* Header styles */
+.header {
+    background-color: #36454F;
+    color: #FFFFFF;
+    padding: 10px;
+    padding-left: 100px;
+    font-family: 'Roboto';
+    font-size: 28px;
+    font-weight: bold;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure content is below the header */
+.main {
+    padding-top: 60px;
+}
+
+/* Tab styles */
+.stTabs [data-baseweb="tab-list"] {
+    background-color: #FFFFFF;
+    margin-bottom: 20px;
+    margin-top: -70px;
+    border-bottom: none;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background-color: #FFFFFF;
+    color: #000000;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 0;
+    border-bottom: none;
+}
+
+.stTabs [aria-selected="true"] {
+    border-bottom: none;
+    color: #36454F;
+}
+
+/* Green background for sections */
+.green-background {
+    background-color: #E3F1E7;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 0px;
+}
+
+/* Final result box */
+.final-result {
+    background-color: #FFFFFF;
+    padding: 20px;
+    border: 1px solid #DDDDDD;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+/* Container styling */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Slider customization */
+.stSlider .baseweb-slider__thumb {
+    background-color: #36454F;
+}
+
+/* Dropdown and select box styling */
+.stSelectbox {
+    border: none;
+}
+
+.stSelectbox .css-1r7d5t1 {
+    border: none;
+    color: #000000;
+}
+
+.stSelectbox .css-1r7d5t1 .css-1c2ji3i {
+    color: #000000;
+}
+
+.stSelectbox .css-1r7d5t1 .css-1c2ji3i:hover {
+    background-color: #E8F5E9;
+}
+
+/* Add space between slicers */
+.slicer-container > div {
+    margin-bottom: 20px;
+}
+
+div.stButton > button {
+    background-color: #36454F;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Change button color on hover */
+div.stButton > button:hover {
+    background-color: #36454F;
+    color: #FFFFFF;
+}
